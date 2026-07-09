@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "Hello DevOps!"
+echo "Hello Jenkins CI!"
 echo "Current user:"
 whoami
 
