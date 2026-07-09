@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "Hello Jenkins CI - Auto Build!"
+echo "Hello Jenkins CI - Auto Build from pipelinefile!"
 echo "Current user:"
 whoami
 
