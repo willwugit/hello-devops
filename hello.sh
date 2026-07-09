@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "Hello Jenkins CI - Auto Build from pipelinefile!"
+echo "Hello Jenkins CI - Auto Build from nihao!"
 echo "Current user:"
 whoami
 
