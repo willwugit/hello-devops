@@ -1,24 +1,32 @@
 pipeline {
+
     agent any
 
     stages {
 
         stage('Checkout') {
             steps {
-                echo 'Getting source code'
+                git branch: 'main',
+                    url: 'https://github.com/willwugit/hello-devops.git'
             }
         }
 
+
         stage('Run Script') {
             steps {
-                sh './hello.sh'
+                sh '''
+                chmod +x hello.sh
+                ./hello.sh
+                '''
             }
         }
+
 
         stage('Finish') {
             steps {
                 echo 'Pipeline finished'
             }
         }
+
     }
 }
