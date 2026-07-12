@@ -61,7 +61,7 @@ pipeline {
 
                 docker run --rm \
                 -d \
-                -p 8081:8080 \
+                --network cicd-net \
                 --name test-container \
                 ${IMAGE_NAME}:${IMAGE_TAG}
 
@@ -69,10 +69,11 @@ pipeline {
                 sleep 5
 
 
-                curl localhost:8081
+                curl test-container:8080
 
 
                 docker stop test-container
+                docker rm test-container
 
                 """
 
