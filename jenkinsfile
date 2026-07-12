@@ -1,3 +1,4 @@
+```groovy
 pipeline {
 
     agent any
@@ -19,25 +20,29 @@ pipeline {
 
                 script {
 
-                    // 获取当前 Git commit short hash
+
+                    // 获取当前 Git commit hash
                     def commitId = sh(
                         script: "git rev-parse --short HEAD",
                         returnStdout: true
                     ).trim()
 
 
-                    // 保存为环境变量，供后续stage使用
+                    // 保存 IMAGE_TAG 给后续 stage 使用
                     env.IMAGE_TAG = commitId
 
 
-                    echo "Building image:"
+                    echo "================================"
+                    echo "Building Docker Image"
                     echo "${IMAGE_NAME}:${IMAGE_TAG}"
+                    echo "================================"
 
 
                     sh """
                     docker build \
                     -t ${IMAGE_NAME}:${IMAGE_TAG} .
                     """
+
 
                 }
 
@@ -47,16 +52,18 @@ pipeline {
 
 
 
-        stage('Run Docker Container') {
+        stage('Run Container Test') {
 
             steps {
 
-                echo "Running container test"
+
+                echo "Testing Docker Image"
 
 
                 sh """
                 docker run --rm ${IMAGE_NAME}:${IMAGE_TAG}
                 """
+
 
             }
 
@@ -68,25 +75,39 @@ pipeline {
 
             steps {
 
-                script {
+
+                withCredentials([
+
+                    usernamePassword(
+                        credentialsId: 'dockerhub',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )
+
+                ]) {
 
 
-                    echo "Pushing image to Docker Hub"
+                    echo "Login Docker Hub"
 
 
-                    docker.withRegistry(
-                        'https://registry-1.docker.io',
-                        'dockerhub'
-                    ) {
+                    sh '''
+
+                    echo $DOCKER_PASS | docker login \
+                    -u $DOCKER_USER \
+                    --password-stdin
 
 
-                        sh """
-                        docker push ${IMAGE_NAME}:${IMAGE_TAG}
-                        """
+                    echo "Push Image"
 
-                    }
+
+                    docker push ${IMAGE_NAME}:${IMAGE_TAG}
+
+
+                    '''
+
 
                 }
+
 
             }
 
@@ -98,7 +119,9 @@ pipeline {
 
             steps {
 
+
                 echo "Pipeline finished successfully"
+
 
             }
 
@@ -109,3 +132,4 @@ pipeline {
 
 
 }
+```
