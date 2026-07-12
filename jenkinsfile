@@ -4,7 +4,9 @@ pipeline {
 
 
     environment {
-        IMAGE_NAME = "hello-app"
+
+        IMAGE_NAME = "dockerwillwu1021/hello-app"
+
     }
 
 
@@ -17,13 +19,19 @@ pipeline {
 
                 script {
 
+                    // 获取当前 Git commit short hash
                     def commitId = sh(
                         script: "git rev-parse --short HEAD",
                         returnStdout: true
                     ).trim()
 
 
+                    // 保存为环境变量，供后续stage使用
                     env.IMAGE_TAG = commitId
+
+
+                    echo "Building image:"
+                    echo "${IMAGE_NAME}:${IMAGE_TAG}"
 
 
                     sh """
@@ -34,28 +42,70 @@ pipeline {
                 }
 
             }
+
         }
+
 
 
         stage('Run Docker Container') {
 
             steps {
 
+                echo "Running container test"
+
+
                 sh """
                 docker run --rm ${IMAGE_NAME}:${IMAGE_TAG}
                 """
 
             }
+
         }
+
+
+
+        stage('Push Image') {
+
+            steps {
+
+                script {
+
+
+                    echo "Pushing image to Docker Hub"
+
+
+                    docker.withRegistry(
+                        'https://registry-1.docker.io',
+                        'dockerhub'
+                    ) {
+
+
+                        sh """
+                        docker push ${IMAGE_NAME}:${IMAGE_TAG}
+                        """
+
+                    }
+
+                }
+
+            }
+
+        }
+
 
 
         stage('Finish') {
 
             steps {
 
-                echo "Pipeline finished"
+                echo "Pipeline finished successfully"
 
             }
+
         }
+
+
     }
+
+
 }
