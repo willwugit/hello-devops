@@ -5,7 +5,7 @@ pipeline {
 
     environment {
 
-        IMAGE_NAME = "dockerwillwu1021/hello-app"
+        IMAGE_NAME = "dockerwillwu1021/hello-web"
 
     }
 
@@ -55,14 +55,26 @@ pipeline {
 
             steps {
 
-
                 echo "Testing Docker Image"
 
-
                 sh """
-                docker run --rm ${IMAGE_NAME}:${IMAGE_TAG}
-                """
 
+                docker run --rm \
+                -d \
+                -p 8081:8080 \
+                --name test-container \
+                ${IMAGE_NAME}:${IMAGE_TAG}
+
+
+                sleep 5
+
+
+                curl localhost:8081
+
+
+                docker stop test-container
+
+                """
 
             }
 
@@ -95,12 +107,30 @@ pipeline {
                     -u $DOCKER_USER \
                     --password-stdin
 
+                    echo "Create latest tag"
+                    docker tag \
+                    ${IMAGE_NAME}:${IMAGE_TAG} \
+                    ${IMAGE_NAME}:latest
 
-                    echo "Push Image"
+                    echo "Push version tag"
 
 
-                    docker push ${IMAGE_NAME}:${IMAGE_TAG}
 
+                    docker push \
+                    ${IMAGE_NAME}:${IMAGE_TAG}
+
+
+
+                    echo "Push latest tag"
+
+
+
+                    docker push \
+                    ${IMAGE_NAME}:latest
+
+
+
+                    docker logout
 
                     '''
 
