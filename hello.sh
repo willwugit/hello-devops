@@ -1,13 +1,12 @@
 #!/bin/sh
 
-echo "Hello Jenkins CI - Auto Build from nihao!"
-echo "Current user:"
+echo "Hello Docker Image from Jenkins!"
+
+echo "User:"
 whoami
 
-echo "Current directory:"
-pwd
+echo "Hostname:"
+hostname
 
-echo "Current time:"
+echo "Date:"
 date
-
-echo "Done."
