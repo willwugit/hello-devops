@@ -12,11 +12,10 @@ pipeline {
     }
 }
 
-        stage('Run Script') {
+        stage('Run Docker Container') {
             steps {
                 sh '''
-                chmod +x hello.sh
-                ./hello.sh
+                docker run --rm hello-app
                 '''
             }
         }
