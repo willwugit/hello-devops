@@ -59,7 +59,7 @@ pipeline {
 
                 sh """
 
-                docker run --rm \
+                docker run \
                 -d \
                 --network cicd-net \
                 --name test-container \
