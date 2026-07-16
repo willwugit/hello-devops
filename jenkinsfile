@@ -142,7 +142,17 @@ pipeline {
             }
 
         }
-
+        
+        stage('Debug SSH') {
+            steps {
+                sh '''
+                whoami
+                echo $HOME
+                ls -la ~/.ssh || true
+                ssh -v willwu@host.docker.internal exit
+                '''
+            }
+        }
         stage('Deploy') {
 
             steps {
